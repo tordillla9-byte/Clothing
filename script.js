@@ -1,4 +1,4 @@
-const apiKey = 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // جایگزین کنید
+const apiKey = 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // جایگزین کنید (API KEY صحیح را وارد کنید)
 const apiEndpoint = 'https://api.openai.com/v1/images/generations'; // آدرس API OpenAI
 
 async function processImages() {
@@ -40,8 +40,17 @@ async function processImages() {
             body: JSON.stringify(data)
         });
 
+        console.log('Response Status:', response.status);
+        console.log('Response Status Text:', response.statusText);
+
         const result = await response.json();
-        resultImage.src = result.data[0].url; // نمایش عکس تولید شده
+        console.log('Result:', result);
+
+        if (result.data && result.data.length > 0) {
+            resultImage.src = result.data[0].url; // نمایش عکس تولید شده
+        } else {
+            alert('تصویری تولید نشد.');
+        }
     } catch (error) {
         console.error('Error:', error);
         alert('خطا در پردازش عکس.');
@@ -56,6 +65,3 @@ function toBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
-
-
-
