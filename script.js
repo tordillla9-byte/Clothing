@@ -16,7 +16,7 @@ async function processImages() {
     const personImageBase64 = await toBase64(personImageFile);
 
     // ارسال درخواست به API هوش مصنوعی
-    const apiEndpoint = 'YOUR_AI_API_ENDPOINT'; // جایگزین کنید
+    const apiEndpoint = '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'; // جایگزین کنید
     const data = {
         clothingImage: clothingImageBase64,
         personImage: personImageBase64
@@ -47,3 +47,4 @@ function toBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
+
