@@ -1,21 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Image Generator</title>
+    <title>تغییر لباس با هوش مصنوعی</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <input type="text" id="promptInput" placeholder="Enter prompt">
-  <button onclick="generateImage()">Generate Image</button>
-  <img id="resultImage" src="" alt="Generated Image">
-
-  <script>
-    async function generateImage() {
-      const prompt = document.getElementById('promptInput').value;
-      const response = await fetch(`/generate-image?prompt=${prompt}`);
-      const data = await response.json();
-      document.getElementById('resultImage').src = data.imageUrl;
-    }
-  </script>
+    <h1>تغییر لباس با هوش مصنوعی</h1>
+    <label for="clothingImage">عکس لباس مورد نظر:</label><br>
+    <input type="file" id="clothingImage" accept="image/*"><br><br>
+    <label for="personImage">عکس خودتان:</label><br>
+    <input type="file" id="personImage" accept="image/*"><br><br>
+    <button onclick="processImages()">اجرا</button><br><br>
+    <img id="resultImage" src="#" alt="عکس نهایی" style="max-width: 500px;">
+    <script src="script.js"></script>
 </body>
 </html>
-
