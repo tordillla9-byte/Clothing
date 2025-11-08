@@ -6,7 +6,7 @@ async function generateImage(prompt) {
   try {
     // اعتبارسنجی داده‌ها
     if (!prompt) {
-      throw new Error('Prompt نمی‌تواند خالی باشد.');
+      throw new Error('Generate an image of a person wearing a black leather jacket. The person's face and body should remain the same, but the clothing should be replaced with a black leather jacket.');
     }
 
     // ارسال درخواست به API
@@ -50,3 +50,4 @@ async function generateImage(prompt) {
     return null;
   }
 }
+
