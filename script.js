@@ -1,3 +1,8 @@
+Authorization: Bearer OPENAI_API_KEY
+curl https://api.openai.com/v1/models \
+  -H "Authorization: Bearer $OPENAI_API_KEY" \
+  -H "OpenAI-Organization: $ORGANIZATION_ID" \
+  -H "OpenAI-Project: $PROJECT_ID"
 async function processImages() {
     const clothingImageInput = document.getElementById('clothingImage');
     const personImageInput = document.getElementById('personImage');
@@ -16,7 +21,7 @@ async function processImages() {
     const personImageBase64 = await toBase64(personImageFile);
 
     // ارسال درخواست به API هوش مصنوعی
-    const apiEndpoint = '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'; // جایگزین کنید
+    const apiEndpoint = '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'; // جایگزین کنید
     const data = {
         clothingImage: clothingImageBase64,
         personImage: personImageBase64
@@ -47,5 +52,6 @@ function toBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
+
 
 
