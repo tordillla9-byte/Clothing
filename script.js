@@ -1,76 +1,52 @@
-headers: {
-    'Content-Type': 'application/json',
-    'Authorization': `Bearer ${apiKey}`
-}
-const apiKey = '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'; // جایگزین کنید
-const apiEndpoint = 'https://api.openai.com/v1/images/generations'; // آدرس API OpenAI
+// API Key رو از متغیر محیطی دریافت کنید
+const apiKey = process.env.OPENAI_API_KEY;
+const apiEndpoint = 'https://api.openai.com/v1/images/generations';
 
-async function processImages() {
-    const clothingImageInput = document.getElementById('clothingImage');
-    const personImageInput = document.getElementById('personImage');
-    const resultImage = document.getElementById('resultImage');
-
-    const clothingImageFile = clothingImageInput.files[0];
-    const personImageFile = personImageInput.files[0];
-
-    if (!clothingImageFile || !personImageFile) {
-        alert('لطفا هر دو عکس را انتخاب کنید.');
-        return;
+async function generateImage(prompt) {
+  try {
+    // اعتبارسنجی داده‌ها
+    if (!prompt) {
+      throw new Error('Prompt نمی‌تواند خالی باشد.');
     }
 
-    // تبدیل عکس‌ها به Base64
-    const clothingImageBase64 = await toBase64(clothingImageFile);
-    const personImageBase64 = await toBase64(personImageFile);
-
-    const prompt = `Generate an image of a person wearing the clothing in the provided clothing image. The person's face and body should remain the same, but the clothing should be replaced with the clothing from the clothing image. Make sure the clothing fits the person naturally and the lighting and shadows are consistent.`;
-
-    // ارسال درخواست به API هوش مصنوعی
-    const data = {
-        model: "dall-e-2", // یا "dall-e-3"
+    // ارسال درخواست به API
+    const response = await fetch(apiEndpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
         prompt: prompt,
-        n: 1, // تعداد تصاویر
-        size: "512x512", // اندازه تصویر
-        image: personImageBase64, // ارسال عکس شخص به عنوان ورودی
-        mask: clothingImageBase64 // ارسال عکس لباس به عنوان ماسک
-    };
-
-    try {
-        const response = await fetch(apiEndpoint, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${apiKey}`
-            },
-            body: JSON.stringify(data)
-        });
-
-        console.log('Response Status:', response.status);
-        console.log('Response Status Text:', response.statusText);
-
-        const result = await response.json();
-        console.log('Result:', result);
-
-        if (result.data && result.data.length > 0) {
-            resultImage.src = result.data[0].url; // نمایش عکس تولید شده
-        } else {
-            alert('تصویری تولید نشد.');
-        }
-    } catch (error) {
-        console.error('Error:', error);
-        alert('خطا در پردازش عکس.');
-    }
-}
-
-function toBase64(file) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = () => resolve(reader.result);
-        reader.onerror = error => reject(error);
+        n: 1,
+        size: '512x512'
+      })
     });
+
+    // بررسی وضعیت پاسخ
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    // پردازش پاسخ
+    const data = await response.json();
+
+    // بررسی وجود خطا در پاسخ
+    if (data.error) {
+      throw new Error(data.error.message);
+    }
+
+    // بررسی وجود تصویر
+    if (!data.data || data.data.length === 0) {
+      throw new Error('تصویری تولید نشد.');
+    }
+
+    // بازگرداندن آدرس تصویر
+    return data.data[0].url;
+  } catch (error) {
+    // مدیریت خطا
+    console.error('Error generating image:', error);
+    alert('خطا در تولید تصویر: ' + error.message);
+    return null;
+  }
 }
-
-
-
-
-
