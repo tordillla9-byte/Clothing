@@ -1,33 +1,49 @@
-// server.js
-require('dotenv').config();
-const express = require('express');
-const OpenAI = require('openai');
+async function processImages() {
+    const clothingImageInput = document.getElementById('clothingImage');
+    const personImageInput = document.getElementById('personImage');
+    const resultImage = document.getElementById('resultImage');
 
-const app = express();
-const port = 3000;
+    const clothingImageFile = clothingImageInput.files[0];
+    const personImageFile = personImageInput.files[0];
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+    if (!clothingImageFile || !personImageFile) {
+        alert('لطفا هر دو عکس را انتخاب کنید.');
+        return;
+    }
 
-app.get('/generate-image', async (req, res) => {
-  try {
-    const prompt = req.query.prompt;
+    // تبدیل عکس‌ها به Base64
+    const clothingImageBase64 = await toBase64(clothingImageFile);
+    const personImageBase64 = await toBase64(personImageFile);
 
-    const response = await openai.images.generate({
-      prompt: prompt,
-      n: 1,
-      size: "512x512",
+    // ارسال درخواست به API هوش مصنوعی
+    const apiEndpoint = 'YOUR_AI_API_ENDPOINT'; // جایگزین کنید
+    const data = {
+        clothingImage: clothingImageBase64,
+        personImage: personImageBase64
+    };
+
+    try {
+        const response = await fetch(apiEndpoint, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await response.json();
+        resultImage.src = result.outputImage; // فرض بر این است که API یک فیلد به نام outputImage برمی‌گرداند
+    } catch (error) {
+        console.error('Error:', error);
+        alert('خطا در پردازش عکس.');
+    }
+}
+
+function toBase64(file) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsDataURL(file);
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = error => reject(error);
     });
-
-    const imageUrl = response.data[0].url;
-    res.json({ imageUrl: imageUrl });
-  } catch (error) {
-    console.error('Error generating image:', error);
-    res.status(500).json({ error: 'Failed to generate image' });
-  }
-});
-
-app.listen(port, () => {
-  console.log(`Server listening on port ${port}`);
-});
+}
