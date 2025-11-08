@@ -16,7 +16,7 @@ async function processImages() {
     const personImageBase64 = await toBase64(personImageFile);
 
     // ارسال درخواست به API هوش مصنوعی
-    const apiEndpoint = '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'; // جایگزین کنید
+    const apiEndpoint = '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'; // جایگزین کنید
     const data = {
         clothingImage: clothingImageBase64,
         personImage: personImageBase64
@@ -47,4 +47,5 @@ function toBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
+
 
