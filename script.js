@@ -2,7 +2,7 @@ headers: {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${apiKey}`
 }
-const apiKey = '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'; // جایگزین کنید
+const apiKey = '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'; // جایگزین کنید
 const apiEndpoint = 'https://api.openai.com/v1/images/generations'; // آدرس API OpenAI
 
 async function processImages() {
@@ -69,6 +69,7 @@ function toBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
+
 
 
 
