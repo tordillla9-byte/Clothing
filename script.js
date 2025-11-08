@@ -1,4 +1,4 @@
-const apiKey = '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'; // جایگزین کنید (API KEY صحیح را وارد کنید)
+const apiKey = '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'; // جایگزین کنید
 const apiEndpoint = 'https://api.openai.com/v1/images/generations'; // آدرس API OpenAI
 
 async function processImages() {
@@ -65,4 +65,5 @@ function toBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
+
 
