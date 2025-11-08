@@ -1,62 +1,33 @@
-// API Key رو از متغیر محیطی دریافت کنید
-const apiKey = process.env.OPENAI_API_KEY;
-const apiEndpoint = 'https://api.openai.com/v1/images/generations';
+// server.js
+require('dotenv').config();
+const express = require('express');
+const OpenAI = require('openai');
 
-async function generateImage(prompt) {
+const app = express();
+const port = 3000;
+
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+app.get('/generate-image', async (req, res) => {
   try {
-    // اعتبارسنجی داده‌ها
-    if (!prompt || prompt.trim() === '') {
-      throw new Error('Prompt نمی‌تواند خالی باشد.');
-    }
+    const prompt = req.query.prompt;
 
-    // ارسال درخواست به API
-    const response = await fetch(apiEndpoint, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
-      },
-      body: JSON.stringify({
-        prompt: prompt,
-        n: 1,
-        size: '512x512'
-      })
+    const response = await openai.images.generate({
+      prompt: prompt,
+      n: 1,
+      size: "512x512",
     });
 
-    // بررسی وضعیت پاسخ
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    // پردازش پاسخ
-    const data = await response.json();
-
-    // بررسی وجود خطا در پاسخ
-    if (data.error) {
-      throw new Error(data.error.message);
-    }
-
-    // بررسی وجود تصویر
-    if (!data.data || data.data.length === 0) {
-      throw new Error('تصویری تولید نشد.');
-    }
-
-    // بازگرداندن آدرس تصویر
-    return data.data[0].url;
+    const imageUrl = response.data[0].url;
+    res.json({ imageUrl: imageUrl });
   } catch (error) {
-    // مدیریت خطا
     console.error('Error generating image:', error);
-    alert('خطا در تولید تصویر: ' + error.message);
-    return null;
+    res.status(500).json({ error: 'Failed to generate image' });
   }
-}
+});
 
-// مثال استفاده از تابع
-const userPrompt = document.getElementById('promptInput').value; // دریافت prompt از ورودی کاربر
-generateImage(userPrompt)
-  .then(imageUrl => {
-    if (imageUrl) {
-      // نمایش تصویر
-      document.getElementById('resultImage').src = imageUrl;
-    }
-  });
+app.listen(port, () => {
+  console.log(`Server listening on port ${port}`);
+});
