@@ -1,3 +1,6 @@
+const apiKey = 'sk-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx'; // جایگزین کنید
+const apiEndpoint = 'https://api.openai.com/v1/images/generations'; // آدرس API OpenAI
+
 async function processImages() {
     const clothingImageInput = document.getElementById('clothingImage');
     const personImageInput = document.getElementById('personImage');
@@ -15,25 +18,30 @@ async function processImages() {
     const clothingImageBase64 = await toBase64(clothingImageFile);
     const personImageBase64 = await toBase64(personImageFile);
 
-    // ارسال درخواست به API هوش مصنوعی
-    const apiKey = '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'; // جایگزین کنید
+    const prompt = `Generate an image of a person wearing the clothing in the provided clothing image. The person's face and body should remain the same, but the clothing should be replaced with the clothing from the clothing image. Make sure the clothing fits the person naturally and the lighting and shadows are consistent.`;
 
+    // ارسال درخواست به API هوش مصنوعی
     const data = {
-        clothingImage: clothingImageBase64,
-        personImage: personImageBase64
+        model: "dall-e-2", // یا "dall-e-3"
+        prompt: prompt,
+        n: 1, // تعداد تصاویر
+        size: "512x512", // اندازه تصویر
+        image: personImageBase64, // ارسال عکس شخص به عنوان ورودی
+        mask: clothingImageBase64 // ارسال عکس لباس به عنوان ماسک
     };
 
     try {
         const response = await fetch(apiEndpoint, {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${apiKey}`
             },
             body: JSON.stringify(data)
         });
 
         const result = await response.json();
-        resultImage.src = result.outputImage; // فرض بر این است که API یک فیلد به نام outputImage برمی‌گرداند
+        resultImage.src = result.data[0].url; // نمایش عکس تولید شده
     } catch (error) {
         console.error('Error:', error);
         alert('خطا در پردازش عکس.');
@@ -48,4 +56,6 @@ function toBase64(file) {
         reader.onerror = error => reject(error);
     });
 }
+
+
 
