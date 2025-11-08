@@ -5,8 +5,8 @@ const apiEndpoint = 'https://api.openai.com/v1/images/generations';
 async function generateImage(prompt) {
   try {
     // اعتبارسنجی داده‌ها
-    if (!prompt) {
-      throw new Error('Generate an image of a person wearing a black leather jacket. The person's face and body should remain the same, but the clothing should be replaced with a black leather jacket.');
+    if (!prompt || prompt.trim() === '') {
+      throw new Error('Prompt نمی‌تواند خالی باشد.');
     }
 
     // ارسال درخواست به API
@@ -51,3 +51,12 @@ async function generateImage(prompt) {
   }
 }
 
+// مثال استفاده از تابع
+const userPrompt = document.getElementById('promptInput').value; // دریافت prompt از ورودی کاربر
+generateImage(userPrompt)
+  .then(imageUrl => {
+    if (imageUrl) {
+      // نمایش تصویر
+      document.getElementById('resultImage').src = imageUrl;
+    }
+  });
